@@ -37,6 +37,7 @@
                 <md-input
                   v-model="sourceData.url"
                   placeholder="Enter request URL"
+                  @keyup="response = null"
                 />
               </md-field>
             </div>
