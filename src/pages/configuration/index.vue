@@ -96,7 +96,9 @@
                 >{{ item.method }}</md-table-cell
               >
               <md-table-cell md-label="ดำเนินการ" style="width: 15%">
-                <md-button class="md-icon-button md-warning"
+                <md-button
+                  class="md-icon-button md-warning"
+                  @click="editSource(item._id)"
                   ><md-icon>edit</md-icon></md-button
                 >
                 <md-button
@@ -203,6 +205,9 @@ export default {
     },
     addSource() {
       this.$router.push("/configuration/add");
+    },
+    editSource(id) {
+      this.$router.push("/configuration/edit/" + id);
     },
     async getSourceList() {
       try {

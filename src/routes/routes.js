@@ -46,7 +46,12 @@ let dashboardPages = {
     {
       path: "/configuration/add",
       name: "add configuration",
-      component: () => import('@/pages/configuration/add.vue')
+      component: () => import('@/pages/configuration/form.vue')
+    },
+    {
+      path: "/configuration/edit/:id",
+      name: "edit configuration",
+      component: () => import('@/pages/configuration/form.vue')
     },
     {
       path: "/cds",
