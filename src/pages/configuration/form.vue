@@ -2,13 +2,13 @@
   <div class="md-layout">
     <div class="md-layout-item">
       <simple-wizard
-        title="เพิ่มแหล่งข้อมูล"
+        :title="title"
         subTitle=""
         prevButtonText="ย้อนกลับ"
         nextButtonText="ถัดไป"
         finishButtonText="บันทึก"
         style="margin: 20px"
-        :finishFunction="insert"
+        :finishFunction="$route.params.id ? update : insert"
       >
         <!-- tab 01 -->
         <wizard-tab
@@ -199,7 +199,11 @@
             <div class="md-layout-item md-size-85">
               <md-field>
                 <label>URL</label>
-                <md-input readonly placeholder="Enter URL" v-model="cdsProperties.url" />
+                <md-input
+                  readonly
+                  placeholder="Enter URL"
+                  v-model="cdsProperties.url"
+                />
               </md-field>
             </div>
           </div>
@@ -327,7 +331,6 @@ import Swal from "sweetalert2";
 
 import scheduleList from "./scheduleList";
 
-// document.querySelector('button.md-success').addEventListener("click", alert('asshole'));
 export default {
   components: { simpleWizard, wizardTab },
   data() {
@@ -368,10 +371,17 @@ export default {
 
       cdsId: "",
       response: null,
+
+      title: "",
     };
   },
   mounted() {
-    this.getNewId();
+    if (this.$route.params.id) {
+      this.getEditFormData();
+    } else {
+      this.title = "เพิ่มแหล่งข้อมูล";
+      this.getNewId();
+    }
   },
   methods: {
     addTableCell() {
@@ -490,6 +500,38 @@ export default {
       this.cdsId = await newId.data;
       this.cdsProperties.url += await this.cdsId;
     },
+    async getEditFormData() {
+      const sourceResponse = await this.$http({
+        method: "GET",
+        url: "http://localhost:3003/source/" + this.$route.params.id,
+      });
+      this.title = "แก้ไขแหล่งข้อมูล";
+
+      Object.keys(this.sourceData).forEach((element) => {
+        this.sourceData[element] = sourceResponse.data[element];
+      });
+      this.row.queryParams = this.sourceData.queryParams.length;
+      this.row.body = this.sourceData.body.length;
+      this.row.headers = this.sourceData.headers.length;
+
+      sourceResponse.data.schedule.date = new Date(
+        sourceResponse.data.schedule.date
+      );
+      this.schedule = sourceResponse.data.schedule;
+
+      const cdsResponse = await this.$http({
+        method: "GET",
+        url: "http://localhost:3003/CDS/getById/" + sourceResponse.data.cds,
+      });
+
+      this.cdsProperties.method = cdsResponse.data.method;
+      this.cdsProperties.url = cdsResponse.data.url;
+      this.cdsProperties.description = cdsResponse.data.description;
+
+      this.cdsId = cdsResponse.data._id;
+
+      this.requestAPI();
+    },
     async insert() {
       this.sourceData["name"] = this.response.name;
       this.sourceData["schedule"] = this.schedule;
@@ -523,6 +565,39 @@ export default {
         });
         Swal.fire({
           title: "นำเข้าแหล่งข้อมูลเสร็จสิ้น",
+          icon: "success",
+          confirmButtonText: "ปิด",
+        }).then(() => {
+          this.$router.push("/configuration");
+        });
+      } catch (error) {
+        Swal.fire({
+          title: `Error: ${error.response.status} ${error.response.statusText}`,
+          icon: "error",
+          confirmButtonText: "ปิด",
+        });
+      }
+    },
+    async update() {
+      this.sourceData["name"] = this.response.name;
+      this.sourceData["schedule"] = this.schedule;
+
+      delete this.cdsProperties.revision;
+      this.cdsProperties["name"] = this.response.name;
+
+      try {
+        const sourceResponse = await this.$http({
+          method: "PUT",
+          url: "http://localhost:3003/source/" + this.$route.params.id,
+          data: this.sourceData,
+        });
+        const cdsResponse = await this.$http({
+          method: "PUT",
+          url: "http://localhost:3003/CDS/update/" + this.cdsId,
+          data: this.cdsProperties,
+        });
+        Swal.fire({
+          title: "แก้ไขแหล่งข้อมูลเสร็จสิ้น",
           icon: "success",
           confirmButtonText: "ปิด",
         }).then(() => {
