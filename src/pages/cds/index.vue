@@ -50,12 +50,16 @@ export default {
   mounted() {},
   methods: {
     async searchCDS() {
-      const response = await this.$http({
-        method: "POST",
-        url: "http://localhost:3003/cds/search",
-        data: { name: this.keyword },
-      });
-      this.cdsList = await response.data;
+      if (this.keyword) {
+        const response = await this.$http({
+          method: "POST",
+          url: "http://localhost:3003/cds/search",
+          data: { name: this.keyword },
+        });
+        this.cdsList = await response.data;
+      } else {
+        this.cdsList = [];
+      }
     },
   },
 };
