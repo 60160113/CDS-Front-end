@@ -480,13 +480,17 @@ export default {
     },
     validateSecondTab() {
       let url = this.cdsProperties.url,
-        id = this.cdsId;
+        id = this.cdsId,
+        response = this.response;
       return function () {
-        if (parseInt(url.lastIndexOf(id)) + id.length == url.length) {
+        if (
+          parseInt(url.lastIndexOf(id)) + id.length == url.length &&
+          response.name != ""
+        ) {
           return true;
         } else {
           Swal.fire({
-            title: "กรุณาแก้ไข URL",
+            title: "กรุณากรอกข้อมูลให้ครบถ้วน",
             icon: "error",
             confirmButtonText: "ปิด",
           });
