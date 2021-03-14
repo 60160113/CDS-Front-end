@@ -185,14 +185,16 @@
               <md-field>
                 <label for="methodList">Methods</label>
                 <md-select id="methodList" v-model="cdsProperties.method">
-                  <md-option
+                  <!-- <md-option
                     v-for="item in methodList"
                     :key="item"
                     :label="item"
                     :value="item"
                   >
                     {{ item }}
-                  </md-option>
+                  </md-option> -->
+                  <md-option label="GET" value="GET"> GET </md-option>
+                  <md-option label="POST" value="POST"> POST </md-option>
                 </md-select>
               </md-field>
             </div>
@@ -464,7 +466,7 @@ export default {
       let url = this.sourceData.url,
         response = this.response;
       return function () {
-        if (url && response) {
+        if (url && response && response.hasOwnProperty("name")) {
           return true;
         } else {
           Swal.fire({
