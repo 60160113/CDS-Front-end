@@ -40,11 +40,13 @@
               <div class="md-layout-item">
                 <label for="revision" style="color: #3177ce">Revision</label>
                 <table id="revision" style="width: 100%">
-                  <tr v-for="(data, index) in item.revision" :key="index">
-                    <td style="text-center">
-                      <md-radio v-model="revision" :value="data" />
+                  <tr v-for="(data, i) in item.revision" :key="i">
+                    <td>
+                      <center>
+                        <md-radio v-model="revision" :value="data" />
+                      </center>
                     </td>
-                    <td>{{ data.label }}</td>
+                    <td style="width: 90%">{{ data.label }}</td>
                   </tr>
                 </table>
               </div>
@@ -87,6 +89,9 @@ export default {
       isActive: 1,
       revision: "",
     };
+  },
+  mounted() {
+    this.toggle()
   },
   methods: {
     copyToClipboard(element) {
