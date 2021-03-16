@@ -61,6 +61,7 @@ export default {
           if (response.data.length > 0) {
             this.cdsList = await response.data;
           } else {
+            this.cdsList = [];
             throw "ไม่พบข้อมูล";
           }
         } else {
@@ -72,7 +73,6 @@ export default {
           icon: "error",
           confirmButtonText: "ปิด",
         });
-        this.cdsList = [];
       }
     },
   },
